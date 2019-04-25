@@ -5203,6 +5203,7 @@ type ChildWorkflowExecutionStartedEventAttributes struct {
 	InitiatedEventId  *int64             `json:"initiatedEventId,omitempty"`
 	WorkflowExecution *WorkflowExecution `json:"workflowExecution,omitempty"`
 	WorkflowType      *WorkflowType      `json:"workflowType,omitempty"`
+	Header            *Header            `json:"header,omitempty"`
 }
 
 // ToWire translates a ChildWorkflowExecutionStartedEventAttributes struct into a Thrift-level intermediate
@@ -5222,7 +5223,7 @@ type ChildWorkflowExecutionStartedEventAttributes struct {
 //   }
 func (v *ChildWorkflowExecutionStartedEventAttributes) ToWire() (wire.Value, error) {
 	var (
-		fields [4]wire.Field
+		fields [5]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -5258,6 +5259,14 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) ToWire() (wire.Value, err
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 40, Value: w}
+		i++
+	}
+	if v.Header != nil {
+		w, err = v.Header.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 50, Value: w}
 		i++
 	}
 
@@ -5322,6 +5331,14 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) FromWire(w wire.Value) er
 				}
 
 			}
+		case 50:
+			if field.Value.Type() == wire.TStruct {
+				v.Header, err = _Header_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -5335,7 +5352,7 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) String() string {
 		return "<nil>"
 	}
 
-	var fields [4]string
+	var fields [5]string
 	i := 0
 	if v.Domain != nil {
 		fields[i] = fmt.Sprintf("Domain: %v", *(v.Domain))
@@ -5351,6 +5368,10 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) String() string {
 	}
 	if v.WorkflowType != nil {
 		fields[i] = fmt.Sprintf("WorkflowType: %v", v.WorkflowType)
+		i++
+	}
+	if v.Header != nil {
+		fields[i] = fmt.Sprintf("Header: %v", v.Header)
 		i++
 	}
 
@@ -5379,6 +5400,9 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) Equals(rhs *ChildWorkflow
 	if !((v.WorkflowType == nil && rhs.WorkflowType == nil) || (v.WorkflowType != nil && rhs.WorkflowType != nil && v.WorkflowType.Equals(rhs.WorkflowType))) {
 		return false
 	}
+	if !((v.Header == nil && rhs.Header == nil) || (v.Header != nil && rhs.Header != nil && v.Header.Equals(rhs.Header))) {
+		return false
+	}
 
 	return true
 }
@@ -5400,6 +5424,9 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) MarshalLogObject(enc zapc
 	}
 	if v.WorkflowType != nil {
 		err = multierr.Append(err, enc.AddObject("workflowType", v.WorkflowType))
+	}
+	if v.Header != nil {
+		err = multierr.Append(err, enc.AddObject("header", v.Header))
 	}
 	return err
 }
@@ -5462,6 +5489,21 @@ func (v *ChildWorkflowExecutionStartedEventAttributes) GetWorkflowType() (o *Wor
 // IsSetWorkflowType returns true if WorkflowType is not nil.
 func (v *ChildWorkflowExecutionStartedEventAttributes) IsSetWorkflowType() bool {
 	return v != nil && v.WorkflowType != nil
+}
+
+// GetHeader returns the value of Header if it is set or its
+// zero value if it is unset.
+func (v *ChildWorkflowExecutionStartedEventAttributes) GetHeader() (o *Header) {
+	if v != nil && v.Header != nil {
+		return v.Header
+	}
+
+	return
+}
+
+// IsSetHeader returns true if Header is not nil.
+func (v *ChildWorkflowExecutionStartedEventAttributes) IsSetHeader() bool {
+	return v != nil && v.Header != nil
 }
 
 type ChildWorkflowExecutionTerminatedEventAttributes struct {
